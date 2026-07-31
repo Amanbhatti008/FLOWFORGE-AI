@@ -125,4 +125,4 @@ If you discover a security vulnerability within this project, please refer to ou
 This project is licensed under the [MIT License](LICENSE).
 
 ---
-*Built with ❤️ by [Your Name / Organization]*
+*Built with ❤️ by Aman Bhatti*
