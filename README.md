@@ -88,8 +88,7 @@ flowforge-ai/
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-username/flowforge-ai.git
-   cd flowforge-ai
+   git clone https://github.com/Amanbhatti008/flowforge-ai.git
    ```
 
 2. **Start Infrastructure Services:**
