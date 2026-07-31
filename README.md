@@ -28,13 +28,20 @@ FlowForge AI is a distributed workflow orchestration platform designed to help t
 ## 🏛️ Architecture
 
 ```mermaid
-flowchart TD
-    UI[React Frontend] -->|REST / WS| API[Spring Boot API]
-    API -->|Produce Events| Kafka[Apache Kafka]
-    Kafka -->|Consume Tasks| Workers[Workflow Workers]
-    API -->|State & Auth| DB[(PostgreSQL)]
-    Workers -->|Distributed Locks| Redis[(Redis)]
-    Workers -->|Update Status| API
+flowchart LR
+    User[User] --> Frontend[React Frontend]
+    Frontend --> API[Spring Boot API]
+    
+    API --> Kafka[Apache Kafka]
+    Kafka --> Workers[Workflow Workers]
+    
+    API --> PostgreSQL[(PostgreSQL)]
+    Workers --> PostgreSQL
+    
+    Workers --> Redis[(Redis Distributed Locking)]
+    
+    API --> Monitoring[Prometheus + Grafana]
+    Workers --> Monitoring
 ```
 
 ## ✨ Key Features
