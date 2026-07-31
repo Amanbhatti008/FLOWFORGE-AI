@@ -28,8 +28,8 @@ FlowForge AI is a distributed workflow orchestration platform designed to help t
 ## 🏛️ Architecture
 
 ```mermaid
-graph TD
-    UI[React Frontend] -->|REST / WS| API[Spring Boot API]
+flowchart TD
+    UI[React Frontend] <-->|REST / WS| API[Spring Boot API]
     API -->|Produce Events| Kafka[Apache Kafka]
     Kafka -->|Consume Tasks| Workers[Workflow Workers]
     API <-->|State & Auth| DB[(PostgreSQL)]
@@ -121,8 +121,9 @@ flowforge-ai/
 |:---:|:---:|
 | ![Login Page](docs/assets/login.png) | ![Dashboard](docs/assets/dashboard.png) |
 
-### Workflow Builder & Execution (Live Demo)
-![Workflow Builder Demo](docs/assets/demo.webp)
+### Workflow Builder
+![Workflow Builder](docs/assets/builder.png)
+*(Note: To upload a demo video, you can drag and drop an MP4 or GIF file directly into this README on GitHub!)*
 
 ## 🔮 Future Improvements
 
