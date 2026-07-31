@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://via.placeholder.com/150x150.png?text=FlowForge+Logo" alt="FlowForge AI Logo" width="120" />
+  <img src="docs/assets/logo.png" alt="FlowForge AI Logo" width="120" />
 
   # FlowForge AI
   
@@ -99,11 +99,11 @@ flowforge-ai/
 
 | Login Page | Dashboard |
 |:---:|:---:|
-| ![Login Placeholder](https://via.placeholder.com/400x250.png?text=Login+Page) | ![Dashboard Placeholder](https://via.placeholder.com/400x250.png?text=Dashboard+Hub) |
+| ![Login Page](docs/assets/login.png) | ![Dashboard](docs/assets/dashboard.png) |
 
 | Workflow Builder | Execution Viewer |
 |:---:|:---:|
-| ![Builder Placeholder](https://via.placeholder.com/400x250.png?text=ReactFlow+Builder) | ![Viewer Placeholder](https://via.placeholder.com/400x250.png?text=Live+Execution+Viewer) |
+| ![Workflow Builder](docs/assets/builder.png) | *(Execution Viewer tracks live telemetry)* |
 
 ## 🔮 Future Improvements
 
