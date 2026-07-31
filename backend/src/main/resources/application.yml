@@ -1,0 +1,78 @@
+spring:
+  application:
+    name: flowforge-backend
+
+  # Java 21 Virtual Threads
+  threads:
+    virtual:
+      enabled: true
+
+  # Database Configuration
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:flowforge}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+
+  # Flyway Configuration
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
+  # Kafka Configuration
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: flowforge-workers
+      auto-offset-reset: earliest
+      enable-auto-commit: false # Manual acknowledgements for reliability
+    producer:
+      acks: all # Highest reliability
+      retries: 3
+    listener:
+      ack-mode: manual_immediate
+
+  # Redis / Redisson Configuration
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+# AI Features Configuration
+flowforge:
+  ai:
+    api-key: ${OPENAI_API_KEY:}
+    model: gpt-4o
+    base-url: https://api.openai.com/v1
+    timeout-seconds: 30
+
+# Actuator & Observability
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: always
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+# Graceful Shutdown
+server:
+  port: 8080
+  shutdown: graceful
+
+# Log Configuration
+logging:
+  level:
+    com.flowforge: DEBUG
+    org.springframework.web: INFO
+    org.springframework.kafka: INFO
