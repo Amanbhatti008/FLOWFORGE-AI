@@ -101,9 +101,8 @@ flowforge-ai/
 |:---:|:---:|
 | ![Login Page](docs/assets/login.png) | ![Dashboard](docs/assets/dashboard.png) |
 
-| Workflow Builder | Execution Viewer |
-|:---:|:---:|
-| ![Workflow Builder](docs/assets/builder.png) | *(Execution Viewer tracks live telemetry)* |
+### Workflow Builder
+![Workflow Builder](docs/assets/builder.png)
 
 ## 🔮 Future Improvements
 
