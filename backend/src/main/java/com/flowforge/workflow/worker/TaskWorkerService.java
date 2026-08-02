@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.annotation.RetryableTopic;
+import org.springframework.kafka.retrytopic.DltStrategy;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,14 +32,23 @@ public class TaskWorkerService {
     private final org.redisson.api.RedissonClient redissonClient;
     private final com.flowforge.workflow.websocket.WebSocketNotificationService webSocketNotificationService;
     private final com.flowforge.workflow.ai.AiService aiService;
+    private final com.flowforge.monitoring.MetricsService metricsService;
     private static final int MAX_RETRIES = 3;
 
+    @RetryableTopic(
+            attempts = "3",
+            autoCreateTopics = "true",
+            dltStrategy = DltStrategy.FAIL_ON_ERROR,
+            retryTopicSuffix = "-retry",
+            dltTopicSuffix = "-dlt"
+    )
     @KafkaListener(topics = KafkaConfig.TOPIC_TASKS_EXECUTE, groupId = "flowforge-workers")
     @Transactional
     public void consumeTaskExecutionEvent(ConsumerRecord<String, String> record, Acknowledgment acknowledgment) {
         log.info("Received execution event for partition {} offset {}", record.partition(), record.offset());
         
         try {
+            metricsService.incrementKafkaMessagesProcessed();
             JsonNode payload = objectMapper.readTree(record.value());
             UUID taskId = UUID.fromString(payload.get("taskId").asText());
 
@@ -139,6 +150,7 @@ public class TaskWorkerService {
             taskRepository.save(task);
             log.error("Task {} failed after {} retries. Terminal state.", task.getTaskRefName(), MAX_RETRIES);
             
+            metricsService.incrementFailedJobs();
             webSocketNotificationService.notifyTaskStatusChange(
                     task.getWorkflowExecution().getId(), task.getTaskRefName(), "FAILED");
             

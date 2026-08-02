@@ -29,6 +29,7 @@ public class DagProgressionService {
     private final WorkflowExecutionRepository workflowExecutionRepository;
     private final ObjectMapper objectMapper;
     private final com.flowforge.workflow.websocket.WebSocketNotificationService webSocketNotificationService;
+    private final com.flowforge.monitoring.MetricsService metricsService;
 
     /**
      * Called whenever a task successfully completes.
@@ -60,6 +61,10 @@ public class DagProgressionService {
                 execution.setStatus(WorkflowStatus.SUCCESS);
                 execution.setCompletedAt(Instant.now());
                 workflowExecutionRepository.save(execution);
+                
+                long durationMillis = java.time.Duration.between(execution.getStartedAt(), execution.getCompletedAt()).toMillis();
+                metricsService.recordWorkflowExecutionTime(durationMillis);
+                
                 webSocketNotificationService.notifyExecutionStatusChange(execution.getId(), "SUCCESS");
                 return;
             }

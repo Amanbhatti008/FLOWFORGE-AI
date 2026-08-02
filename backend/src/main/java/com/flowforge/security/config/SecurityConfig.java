@@ -25,6 +25,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint unauthorizedHandler;
     private final CorsConfig corsConfig;
+    private final RateLimitingFilter rateLimitingFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -53,6 +54,7 @@ public class SecurityConfig {
                         .xssProtection(xss -> xss.disable()) // XSS protection via CSP
                         .referrerPolicy(referrer -> referrer.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN))
                 )
+                .addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

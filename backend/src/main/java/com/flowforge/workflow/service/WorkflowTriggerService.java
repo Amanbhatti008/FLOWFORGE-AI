@@ -33,6 +33,7 @@ public class WorkflowTriggerService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
+    private final com.flowforge.monitoring.MetricsService metricsService;
 
     @Transactional
     public WorkflowExecutionResponse triggerWorkflow(UUID workflowId, TriggerWorkflowRequest request, String userEmail) {
@@ -55,6 +56,8 @@ public class WorkflowTriggerService {
         execution.setStartedAt(Instant.now());
         execution.setStatus(com.flowforge.workflow.statemachine.WorkflowStatus.RUNNING);
         execution = workflowExecutionRepository.save(execution);
+        
+        metricsService.incrementWorkflowExecution();
 
         // 2. Parse DAG JSON
         try {

@@ -24,8 +24,27 @@ jobs:
         distribution: 'temurin'
         cache: maven
         
-    - name: Build with Maven
-      run: mvn -B clean compile --file pom.xml
+    - name: Build and Test with Maven
+      run: mvn -B clean verify --file pom.xml
+
+  docker-build:
+    name: Build Docker Images
+    needs: [backend-build, frontend-build]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Build Backend Docker Image
+      run: |
+        cd backend
+        docker build -t flowforge-backend:latest .
+        
+    - name: Build Frontend Docker Image
+      run: |
+        cd frontend
+        docker build -t flowforge-frontend:latest .
 
   frontend-build:
     name: React Frontend Build
