@@ -19,7 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -63,8 +63,8 @@ public class WorkflowServiceTest {
         testWorkflow.setName("Test Workflow");
         testWorkflow.setDescription("Test Description");
         testWorkflow.setCreatedBy(testUser);
-        testWorkflow.setCreatedAt(LocalDateTime.now());
-        testWorkflow.setUpdatedAt(LocalDateTime.now());
+        testWorkflow.setCreatedAt(Instant.now());
+        testWorkflow.setUpdatedAt(Instant.now());
     }
 
     @Test

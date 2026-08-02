@@ -69,8 +69,8 @@ public class AuthenticationServiceTest {
         TokenPair result = authenticationService.login("test@test.com", "password123", "deviceId", "127.0.0.1", "userAgent");
 
         assertNotNull(result);
-        assertEquals("access-token", result.getAccessToken());
-        assertEquals("refresh-token", result.getRefreshToken());
+        assertEquals("access-token", result.accessToken());
+        assertEquals("refresh-token", result.refreshToken());
         verify(bruteForceProtectionService).loginSucceeded("test@test.com");
         verify(eventPublisher).publishLoginSuccess("test@test.com", "127.0.0.1", "userAgent");
     }
