@@ -1,6 +1,5 @@
 package com.flowforge.workflow.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flowforge.api.exception.AuthenticationException;
 import com.flowforge.security.entity.User;
@@ -8,7 +7,6 @@ import com.flowforge.security.repository.UserRepository;
 import com.flowforge.workflow.domain.Workflow;
 import com.flowforge.workflow.domain.WorkflowVersion;
 import com.flowforge.workflow.dto.CreateWorkflowRequest;
-import com.flowforge.workflow.dto.CreateWorkflowVersionRequest;
 import com.flowforge.workflow.dto.WorkflowResponse;
 import com.flowforge.workflow.repository.WorkflowRepository;
 import com.flowforge.workflow.repository.WorkflowVersionRepository;
@@ -30,6 +28,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@SuppressWarnings("null")
 public class WorkflowServiceTest {
 
     @Mock
