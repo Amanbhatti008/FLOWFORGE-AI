@@ -4,16 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flowforge.workflow.dag.DagProgressionService;
 import com.flowforge.workflow.domain.Task;
-import com.flowforge.workflow.kafka.KafkaConfig;
-import com.flowforge.workflow.repository.TaskRepository;
-import com.flowforge.workflow.statemachine.TaskStatus;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.annotation.RetryableTopic;
-import org.springframework.kafka.retrytopic.DltStrategy;
-import org.springframework.kafka.support.Acknowledgment;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,31 +26,24 @@ public class TaskWorkerService {
     private final com.flowforge.monitoring.MetricsService metricsService;
     private static final int MAX_RETRIES = 3;
 
-    @RetryableTopic(
-            attempts = "3",
-            autoCreateTopics = "true",
-            dltStrategy = DltStrategy.FAIL_ON_ERROR,
-            retryTopicSuffix = "-retry",
-            dltTopicSuffix = "-dlt"
-    )
-    @KafkaListener(topics = KafkaConfig.TOPIC_TASKS_EXECUTE, groupId = "flowforge-workers")
+    @EventListener
+    @Async
     @Transactional
-    public void consumeTaskExecutionEvent(ConsumerRecord<String, String> record, Acknowledgment acknowledgment) {
-        log.info("Received execution event for partition {} offset {}", record.partition(), record.offset());
+    public void consumeTaskExecutionEvent(String eventPayload) {
+        log.info("Received execution event");
         
         try {
-            metricsService.incrementKafkaMessagesProcessed();
-            JsonNode payload = objectMapper.readTree(record.value());
+            metricsService.incrementKafkaMessagesProcessed(); // Keeping metric name for now
+            JsonNode payload = objectMapper.readTree(eventPayload);
             UUID taskId = UUID.fromString(payload.get("taskId").asText());
 
-            // DB Lock: PESSIMISTIC_WRITE ensures that if Kafka delivers duplicate messages,
+            // DB Lock: PESSIMISTIC_WRITE ensures that if we deliver duplicate messages,
             // the second thread blocks here until the first commits, then reads the updated status (e.g. RUNNING/SUCCESS)
             Task task = taskRepository.findByIdForUpdate(taskId)
                     .orElseThrow(() -> new IllegalArgumentException("Task not found: " + taskId));
 
             if (task.getStatus() == TaskStatus.SUCCESS || task.getStatus() == TaskStatus.FAILED || task.getStatus() == TaskStatus.CANCELLED) {
                 log.info("Task {} is already in terminal state {}, skipping", taskId, task.getStatus());
-                acknowledgment.acknowledge();
                 return;
             }
 
@@ -71,7 +56,7 @@ public class TaskWorkerService {
             
             if (!isLocked) {
                 log.warn("Could not acquire distributed lock for task {}. Another worker might be processing it.", taskId);
-                return; // Do not acknowledge, let Kafka retry later if it actually crashed
+                return; 
             }
 
             try {
@@ -102,16 +87,15 @@ public class TaskWorkerService {
                     handleTaskFailure(task);
                 }
 
-                acknowledgment.acknowledge();
             } finally {
-                if (lock.isHeldByCurrentThread()) {
+                if (isLocked) {
                     lock.unlock();
                 }
             }
             
         } catch (Exception e) {
-            log.error("Critical error processing task event: {}", e.getMessage(), e);
-            acknowledgment.acknowledge(); 
+            log.error("Error processing task execution event", e);
+            throw new RuntimeException("Failed to process task", e);
         }
     }
 

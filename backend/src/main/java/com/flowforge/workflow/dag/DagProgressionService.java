@@ -11,6 +11,7 @@ import com.flowforge.workflow.statemachine.TaskStatus;
 import com.flowforge.workflow.statemachine.WorkflowStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,7 @@ public class DagProgressionService {
     private final ObjectMapper objectMapper;
     private final com.flowforge.workflow.websocket.WebSocketNotificationService webSocketNotificationService;
     private final com.flowforge.monitoring.MetricsService metricsService;
+    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * Called whenever a task successfully completes.
@@ -92,6 +94,9 @@ public class DagProgressionService {
                 newTask.setScheduledAt(Instant.now());
                 
                 taskRepository.save(newTask);
+                
+                String eventPayload = String.format("{\"taskId\": \"%s\"}", newTask.getId().toString());
+                eventPublisher.publishEvent(eventPayload);
             }
         } catch (Exception e) {
             log.error("Failed to evaluate DAG progression for workflow execution {}: {}", execution.getId(), e.getMessage(), e);

@@ -16,6 +16,7 @@ import com.flowforge.workflow.repository.TaskRepository;
 import com.flowforge.workflow.repository.WorkflowExecutionRepository;
 import com.flowforge.workflow.repository.WorkflowVersionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,11 +29,12 @@ import java.util.UUID;
 @SuppressWarnings("null")
 public class WorkflowTriggerService {
 
-    private final WorkflowVersionRepository workflowVersionRepository;
-    private final WorkflowExecutionRepository workflowExecutionRepository;
-    private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final WorkflowExecutionRepository workflowExecutionRepository;
+    private final WorkflowVersionRepository workflowVersionRepository;
+    private final TaskRepository taskRepository;
     private final ObjectMapper objectMapper;
+    private final ApplicationEventPublisher eventPublisher;
     private final com.flowforge.monitoring.MetricsService metricsService;
 
     @Transactional
@@ -86,9 +88,15 @@ public class WorkflowTriggerService {
                 taskRepository.save(task);
             }
             
-            // At this point we would publish an event to Kafka so workers can pick up SCHEDULED tasks
-            // eventPublisher.publishExecutionCreatedEvent(...)
-
+            // Publish an event via Spring ApplicationEventPublisher so workers can pick up SCHEDULED tasks
+            for (String nodeId : initialNodeIds) {
+                Task scheduledTask = taskRepository.findByWorkflowExecutionId(execution.getId()).stream()
+                    .filter(t -> t.getTaskRefName().equals(nodeId))
+                    .findFirst().orElseThrow();
+                
+                String eventPayload = String.format("{\"taskId\": \"%s\"}", scheduledTask.getId().toString());
+                eventPublisher.publishEvent(eventPayload);
+            }
         } catch (Exception e) {
             throw new RuntimeException("Failed to trigger workflow execution: " + e.getMessage(), e);
         }
