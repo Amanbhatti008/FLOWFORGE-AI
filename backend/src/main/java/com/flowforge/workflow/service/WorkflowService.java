@@ -13,6 +13,8 @@ import com.flowforge.workflow.domain.WorkflowVersion;
 import com.flowforge.workflow.repository.WorkflowRepository;
 import com.flowforge.workflow.repository.WorkflowVersionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +33,7 @@ public class WorkflowService {
     private final ObjectMapper objectMapper;
 
     @Transactional
+    @CacheEvict(value = "workflows", allEntries = true)
     public WorkflowResponse createWorkflow(CreateWorkflowRequest request, String userEmail) {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new AuthenticationException("User not found"));
@@ -79,6 +82,7 @@ public class WorkflowService {
     }
     
     @Transactional(readOnly = true)
+    @Cacheable(value = "workflows_list")
     public List<WorkflowResponse> listWorkflows() {
         return workflowRepository.findAll().stream()
                 .map(w -> mapToResponse(w, getLatestVersionNumber(w.getId())))
@@ -86,6 +90,7 @@ public class WorkflowService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "workflows", key = "#id")
     public WorkflowResponse getWorkflow(UUID id) {
         Workflow workflow = workflowRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Workflow not found"));
@@ -93,6 +98,7 @@ public class WorkflowService {
     }
 
     @Transactional
+    @CacheEvict(value = {"workflows", "workflows_list"}, allEntries = true)
     public WorkflowResponse updateWorkflow(UUID id, CreateWorkflowRequest request) {
         Workflow workflow = workflowRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Workflow not found"));
@@ -105,6 +111,7 @@ public class WorkflowService {
     }
 
     @Transactional
+    @CacheEvict(value = {"workflows", "workflows_list"}, allEntries = true)
     public void deleteWorkflow(UUID id) {
         if (!workflowRepository.existsById(id)) {
             throw new IllegalArgumentException("Workflow not found");

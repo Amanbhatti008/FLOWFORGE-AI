@@ -56,7 +56,7 @@ public class WorkflowController {
     @PostMapping("/execute")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<StandardResponse<WorkflowExecutionResponse>> executeAdhoc(
-            @RequestBody java.util.Map<String, Object> requestBody,
+            @Valid @RequestBody java.util.Map<String, Object> requestBody,
             Authentication authentication,
             HttpServletRequest httpServletRequest) {
         
@@ -112,7 +112,7 @@ public class WorkflowController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponse<String>> deleteWorkflow(
             @PathVariable UUID id,
             HttpServletRequest httpServletRequest) {

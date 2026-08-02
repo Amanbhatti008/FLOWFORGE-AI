@@ -2,10 +2,14 @@ package com.flowforge.security.config;
 
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
+import io.github.bucket4j.BucketConfiguration;
+import io.github.bucket4j.distributed.proxy.ProxyManager;
+import io.github.bucket4j.redis.redisson.cas.RedissonBasedProxyManager;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.redisson.api.RedissonClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -13,21 +17,25 @@ import org.springframework.lang.NonNull;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class RateLimitingFilter extends OncePerRequestFilter {
 
-    private final Map<String, Bucket> cache = new ConcurrentHashMap<>();
+    private final ProxyManager<String> proxyManager;
 
-    private Bucket createNewBucket() {
-        long capacity = 100; // 100 requests
-        Bandwidth limit = Bandwidth.builder()
-                .capacity(capacity)
-                .refillGreedy(100, Duration.ofMinutes(1))
+    public RateLimitingFilter(RedissonClient redissonClient) {
+        // We use RedissonBasedProxyManager to distribute Bucket4j buckets across nodes.
+        this.proxyManager = RedissonBasedProxyManager.builderFor(redissonClient)
                 .build();
-        return Bucket.builder().addLimit(limit).build();
+    }
+
+    private BucketConfiguration getBucketConfiguration() {
+        return BucketConfiguration.builder()
+                .addLimit(Bandwidth.builder()
+                        .capacity(100)
+                        .refillGreedy(100, Duration.ofMinutes(1))
+                        .build())
+                .build();
     }
 
     @Override
@@ -35,7 +43,8 @@ public class RateLimitingFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         
         String ipAddress = request.getRemoteAddr();
-        Bucket bucket = cache.computeIfAbsent(ipAddress, k -> createNewBucket());
+        
+        Bucket bucket = proxyManager.builder().build(ipAddress, this::getBucketConfiguration);
 
         if (bucket.tryConsume(1)) {
             filterChain.doFilter(request, response);
