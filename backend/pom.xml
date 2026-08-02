@@ -144,7 +144,7 @@
         </dependency>
         <dependency>
             <groupId>com.bucket4j</groupId>
-            <artifactId>bucket4j-redisson</artifactId>
+            <artifactId>bucket4j-redis</artifactId>
             <version>8.10.1</version>
         </dependency>
 

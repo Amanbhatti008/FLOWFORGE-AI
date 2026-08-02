@@ -13,6 +13,8 @@ import org.redisson.api.RedissonClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import io.github.bucket4j.distributed.ExpirationAfterWriteStrategy;
 import org.springframework.lang.NonNull;
 
 import java.io.IOException;
@@ -25,7 +27,9 @@ public class RateLimitingFilter extends OncePerRequestFilter {
 
     public RateLimitingFilter(RedissonClient redissonClient) {
         // We use RedissonBasedProxyManager to distribute Bucket4j buckets across nodes.
-        this.proxyManager = RedissonBasedProxyManager.builderFor(redissonClient)
+        org.redisson.command.CommandAsyncExecutor executor = ((org.redisson.Redisson) redissonClient).getCommandExecutor();
+        this.proxyManager = RedissonBasedProxyManager.builderFor(executor)
+                .withExpirationStrategy(ExpirationAfterWriteStrategy.basedOnTimeForRefillingBucketUpToMax(Duration.ofSeconds(10)))
                 .build();
     }
 

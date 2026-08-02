@@ -27,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@SuppressWarnings("null")
 public class WorkflowControllerTest {
 
     @Autowired
@@ -54,7 +55,7 @@ public class WorkflowControllerTest {
         validToken = jwtTokenProvider.generateAccessToken(user);
 
         workflowId = UUID.randomUUID();
-        mockResponse = new WorkflowResponse(workflowId, "Test Workflow", "Desc", 1, null, null);
+        mockResponse = new WorkflowResponse(workflowId, "Test Workflow", "Desc", null, null, 1);
     }
 
     @Test
