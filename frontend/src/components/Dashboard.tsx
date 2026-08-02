@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Activity, Play, AlertTriangle, Plus, LayoutDashboard, Eye, Clock, XCircle, CheckCircle2, Zap } from 'lucide-react';
 import axios from 'axios';
 
-const API_BASE = 'http://localhost:8080/api/v1';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1';
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();

@@ -15,7 +15,7 @@ import '@xyflow/react/dist/style.css';
 import { ArrowLeft, CheckCircle2, Clock, XCircle, PlayCircle, Loader2, Code, Globe, Mail, Bot, Database, MessageSquare, RotateCcw, PartyPopper, Sparkles } from 'lucide-react';
 import { Client } from '@stomp/stompjs';
 
-const API_BASE = 'http://localhost:8080/api/v1';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1';
 
 // Map taskRefName to a friendly label using the DAG definition
 let taskNameMap: Record<string, string> = {};
@@ -219,7 +219,7 @@ export const ExecutionViewer: React.FC = () => {
   useEffect(() => {
     if (!id) return;
     const client = new Client({
-      brokerURL: 'ws://localhost:8080/ws',
+      brokerURL: import.meta.env.VITE_WS_URL || 'ws://localhost:8080/ws',
       debug: function (str) {
         console.log(str);
       },

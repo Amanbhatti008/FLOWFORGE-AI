@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: flowforge-api
+    env: docker
+    region: ohio
+    plan: free
+    rootDir: backend
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_USER
+        sync: false
+      - key: DATABASE_PASSWORD
+        sync: false
+      - key: KAFKA_BOOTSTRAP_SERVERS
+        sync: false
+      - key: KAFKA_USER
+        sync: false
+      - key: KAFKA_PASSWORD
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false

@@ -17,7 +17,7 @@ import '@xyflow/react/dist/style.css';
 import { ArrowLeft, Play, Code, Globe, Mail, Bot, Database, MessageSquare, GitBranch, Server, FileCheck, Upload, Bell, ChevronDown } from 'lucide-react';
 import axios from 'axios';
 
-const API_BASE = 'http://localhost:8080/api/v1';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1';
 
 // ========== WORKFLOW TEMPLATES ==========
 const TEMPLATES: Record<string, { name: string; description: string; nodes: any[]; edges: any[] }> = {

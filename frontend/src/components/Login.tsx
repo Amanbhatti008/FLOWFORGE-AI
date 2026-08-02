@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Network, Sparkles } from 'lucide-react';
 
-const API_BASE = 'http://localhost:8080/api/v1';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1';
 
 export const Login: React.FC = () => {
   const [email, setEmail] = useState('demo@flowforge.com');
