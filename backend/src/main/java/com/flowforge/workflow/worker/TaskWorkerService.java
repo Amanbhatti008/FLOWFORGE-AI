@@ -6,6 +6,10 @@ import com.flowforge.workflow.dag.DagProgressionService;
 import com.flowforge.workflow.domain.Task;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
+import com.flowforge.workflow.repository.TaskRepository;
+import com.flowforge.workflow.statemachine.TaskStatus;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
