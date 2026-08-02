@@ -19,8 +19,10 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -54,6 +56,9 @@ public class TaskWorkerServiceTest {
     private com.flowforge.workflow.ai.AiService aiService;
 
     @Mock
+    private com.flowforge.monitoring.MetricsService metricsService;
+
+    @Mock
     private TaskExecutor taskExecutor;
 
     @Mock
@@ -76,7 +81,7 @@ public class TaskWorkerServiceTest {
         testTask.setId(taskId);
         testTask.setTaskRefName("task_1");
         testTask.setType("HTTP");
-        testTask.setStatus(TaskStatus.SCHEDULED);
+        ReflectionTestUtils.setField(testTask, "status", TaskStatus.QUEUED);
         WorkflowExecution execution = new WorkflowExecution();
         execution.setId(UUID.randomUUID());
         testTask.setWorkflowExecution(execution);
@@ -113,7 +118,7 @@ public class TaskWorkerServiceTest {
 
     @Test
     void consumeTaskExecutionEvent_TaskAlreadyTerminal() throws Exception {
-        testTask.setStatus(TaskStatus.SUCCESS);
+        ReflectionTestUtils.setField(testTask, "status", TaskStatus.SUCCESS);
         ConsumerRecord<String, String> record = new ConsumerRecord<>("topic", 0, 0, "key", jsonPayload);
 
         when(taskRepository.findByIdForUpdate(taskId)).thenReturn(Optional.of(testTask));
