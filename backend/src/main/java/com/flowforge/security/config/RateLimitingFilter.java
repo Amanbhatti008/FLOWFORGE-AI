@@ -28,8 +28,10 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     public RateLimitingFilter(RedissonClient redissonClient) {
         // We use RedissonBasedProxyManager to distribute Bucket4j buckets across nodes.
         org.redisson.command.CommandAsyncExecutor executor = ((org.redisson.Redisson) redissonClient).getCommandExecutor();
+        io.github.bucket4j.distributed.proxy.ClientSideConfig clientSideConfig = io.github.bucket4j.distributed.proxy.ClientSideConfig.getDefault()
+                .withExpirationAfterWriteStrategy(ExpirationAfterWriteStrategy.basedOnTimeForRefillingBucketUpToMax(Duration.ofSeconds(10)));
         this.proxyManager = RedissonBasedProxyManager.builderFor(executor)
-                .withExpirationStrategy(ExpirationAfterWriteStrategy.basedOnTimeForRefillingBucketUpToMax(Duration.ofSeconds(10)))
+                .withClientSideConfig(clientSideConfig)
                 .build();
     }
 
