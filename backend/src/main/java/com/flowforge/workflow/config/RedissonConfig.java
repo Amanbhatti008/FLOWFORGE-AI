@@ -10,12 +10,20 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RedissonConfig {
 
-    @Value("${spring.data.redis.url:redis://localhost:6379}")
-    private String redisUrl;
+    @Value("${spring.data.redis.url:}")
+    private String springDataRedisUrl;
 
     @Bean
     public RedissonClient redissonClient() {
-        String finalUrl = redisUrl != null ? redisUrl : "redis://localhost:6379";
+        String finalUrl = System.getenv("REDIS_URL");
+        
+        if (finalUrl == null || finalUrl.trim().isEmpty()) {
+            finalUrl = springDataRedisUrl;
+        }
+        
+        if (finalUrl == null || finalUrl.trim().isEmpty()) {
+            finalUrl = "redis://localhost:6379";
+        }
         
         // Find the actual start of the protocol to ignore any hidden characters, quotes, or zero-width spaces
         int idx = finalUrl.indexOf("rediss://");
@@ -29,7 +37,7 @@ public class RedissonConfig {
             finalUrl = finalUrl.replaceAll("[\"\\s]+$", "");
         } else {
             // Throw a very clear error message so we can see exactly what was passed
-            throw new IllegalArgumentException("FATAL CONFIG ERROR: The REDIS_URL provided to Redisson does not contain 'redis://' or 'rediss://'. Actual value received: [" + finalUrl + "]");
+            throw new IllegalArgumentException("FATAL CONFIG ERROR: The REDIS_URL environment variable is invalid. Actual value received: [" + finalUrl + "]. Please ensure it contains redis:// or rediss://");
         }
         
         Config config = new Config();
