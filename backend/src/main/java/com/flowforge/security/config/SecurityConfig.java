@@ -29,8 +29,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // memoryCost: 65536 KB, iterations: 3, parallelism: 1, saltLength: 16, hashLength: 32
-        return new Argon2PasswordEncoder(16, 32, 1, 65536, 3);
+        return new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder();
     }
 
     @Bean

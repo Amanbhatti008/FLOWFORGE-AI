@@ -75,6 +75,7 @@ public class WorkflowTriggerService {
             // 4. Create Initial Tasks
             String inputDataJson = request.getInputData() != null ? objectMapper.writeValueAsString(request.getInputData()) : null;
 
+            List<Task> createdTasks = new java.util.ArrayList<>();
             for (String nodeId : initialNodeIds) {
                 DagNode initialNode = dag.getNodes().stream().filter(n -> n.getId().equals(nodeId)).findFirst().orElseThrow();
                 Task task = new Task();
@@ -85,15 +86,12 @@ public class WorkflowTriggerService {
                 task.setStatus(com.flowforge.workflow.statemachine.TaskStatus.SCHEDULED);
                 task.setInputData(inputDataJson); // Simple input propagation for now
                 task.setScheduledAt(Instant.now());
-                taskRepository.save(task);
+                task = taskRepository.save(task);
+                createdTasks.add(task);
             }
             
             // Publish an event via Spring ApplicationEventPublisher so workers can pick up SCHEDULED tasks
-            for (String nodeId : initialNodeIds) {
-                Task scheduledTask = taskRepository.findByWorkflowExecutionId(execution.getId()).stream()
-                    .filter(t -> t.getTaskRefName().equals(nodeId))
-                    .findFirst().orElseThrow();
-                
+            for (Task scheduledTask : createdTasks) {
                 String eventPayload = String.format("{\"taskId\": \"%s\"}", scheduledTask.getId().toString());
                 eventPublisher.publishEvent(eventPayload);
             }
