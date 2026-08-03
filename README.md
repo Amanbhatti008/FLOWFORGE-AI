@@ -11,6 +11,11 @@
   [![Kafka](https://img.shields.io/badge/Kafka-Enabled-black.svg)](https://kafka.apache.org/)
   [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
+  ### 🚀 Live Demo
+  - **Backend API:** [https://flowforge-api-jezk.onrender.com](https://flowforge-api-jezk.onrender.com) (Live on Render)
+  - **API Documentation (Swagger):** [https://flowforge-api-jezk.onrender.com/api/v1/swagger-ui/index.html](https://flowforge-api-jezk.onrender.com/api/v1/swagger-ui/index.html)
+  - **Frontend UI:** *(Pending Vercel Deployment)*
+
 </div>
 
 ## 📖 Overview
