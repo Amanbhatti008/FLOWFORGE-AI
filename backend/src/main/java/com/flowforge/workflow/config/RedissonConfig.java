@@ -15,9 +15,21 @@ public class RedissonConfig {
 
     @Bean
     public RedissonClient redissonClient() {
-        String finalUrl = redisUrl != null ? redisUrl.trim().replace("\"", "") : "redis://localhost:6379";
-        if (finalUrl.startsWith("REDIS_URL=")) {
-            finalUrl = finalUrl.replace("REDIS_URL=", "").trim().replace("\"", "");
+        String finalUrl = redisUrl != null ? redisUrl : "redis://localhost:6379";
+        
+        // Find the actual start of the protocol to ignore any hidden characters, quotes, or zero-width spaces
+        int idx = finalUrl.indexOf("rediss://");
+        if (idx == -1) {
+            idx = finalUrl.indexOf("redis://");
+        }
+        
+        if (idx != -1) {
+            finalUrl = finalUrl.substring(idx);
+            // Also trim any trailing quotes or spaces
+            finalUrl = finalUrl.replaceAll("[\"\\s]+$", "");
+        } else {
+            // Throw a very clear error message so we can see exactly what was passed
+            throw new IllegalArgumentException("FATAL CONFIG ERROR: The REDIS_URL provided to Redisson does not contain 'redis://' or 'rediss://'. Actual value received: [" + finalUrl + "]");
         }
         
         Config config = new Config();
