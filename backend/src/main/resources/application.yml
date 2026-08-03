@@ -31,6 +31,8 @@ spring:
 
 # AI Features Configuration
 flowforge:
+  cors:
+    allowed-origins: ${ALLOWED_ORIGINS:http://localhost:5173}
   ai:
     api-key: ${OPENAI_API_KEY:}
     model: gpt-4o
