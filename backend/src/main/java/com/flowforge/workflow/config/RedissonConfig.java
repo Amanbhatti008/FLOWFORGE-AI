@@ -15,9 +15,14 @@ public class RedissonConfig {
 
     @Bean
     public RedissonClient redissonClient() {
+        String finalUrl = redisUrl != null ? redisUrl.trim().replace("\"", "") : "redis://localhost:6379";
+        if (finalUrl.startsWith("REDIS_URL=")) {
+            finalUrl = finalUrl.replace("REDIS_URL=", "").trim().replace("\"", "");
+        }
+        
         Config config = new Config();
         config.useSingleServer()
-                .setAddress(redisUrl)
+                .setAddress(finalUrl)
                 .setConnectionMinimumIdleSize(5)
                 .setConnectionPoolSize(20);
         return Redisson.create(config);
