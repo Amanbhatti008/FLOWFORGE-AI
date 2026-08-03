@@ -9,14 +9,16 @@ import org.springframework.context.annotation.Configuration;
 public class CacheConfig {
     @Bean
     public org.springframework.cache.CacheManager cacheManager(org.redisson.api.RedissonClient redissonClient) {
-        // Explicitly defining the cache manager with dynamic cache creation
-        org.redisson.spring.cache.RedissonSpringCacheManager cacheManager = 
-            new org.redisson.spring.cache.RedissonSpringCacheManager(redissonClient);
+        // Redisson in newer versions requires explicit cache configuration
+        // to prevent returning null for undefined caches
+        java.util.Map<String, org.redisson.spring.cache.CacheConfig> config = new java.util.HashMap<>();
         
-        // This explicitly tells the cache manager to create caches dynamically
-        // Redisson handles dynamic cache creation by default, but defining it explicitly
-        // prevents Spring Boot's generic ConcurrentMapCacheManager from taking over
-        // and throwing 'Cannot find cache named X'
-        return cacheManager;
+        // Define workflows_list cache (TTL: 10 mins, MaxIdleTime: 5 mins)
+        config.put("workflows_list", new org.redisson.spring.cache.CacheConfig(10 * 60 * 1000, 5 * 60 * 1000));
+        
+        // Define workflows cache (TTL: 10 mins, MaxIdleTime: 5 mins)
+        config.put("workflows", new org.redisson.spring.cache.CacheConfig(10 * 60 * 1000, 5 * 60 * 1000));
+        
+        return new org.redisson.spring.cache.RedissonSpringCacheManager(redissonClient, config);
     }
 }
