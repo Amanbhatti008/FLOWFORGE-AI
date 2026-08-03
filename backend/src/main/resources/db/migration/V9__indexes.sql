@@ -1,5 +1,4 @@
--- Indexes for Workflow table
-CREATE INDEX IF NOT EXISTS idx_workflow_status ON workflows(status);
+
 CREATE INDEX IF NOT EXISTS idx_workflow_created_by ON workflows(created_by);
 
 -- Indexes for WorkflowExecution table
