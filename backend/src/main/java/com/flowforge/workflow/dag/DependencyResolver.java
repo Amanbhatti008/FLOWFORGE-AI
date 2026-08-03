@@ -15,11 +15,11 @@ public class DependencyResolver {
      * Finds the initial nodes (in-degree 0) for a brand-new workflow execution.
      */
     public static List<String> getInitialNodes(DagDefinition dag) {
-        Set<String> targetNodes = dag.getEdges().stream()
+        Set<String> targetNodes = (dag.getEdges() != null ? dag.getEdges() : new ArrayList<DagEdge>()).stream()
                 .map(DagEdge::getTarget)
                 .collect(Collectors.toSet());
 
-        return dag.getNodes().stream()
+        return (dag.getNodes() != null ? dag.getNodes() : new ArrayList<com.flowforge.workflow.model.DagNode>()).stream()
                 .filter(node -> !targetNodes.contains(node.getId()))
                 .map(node -> node.getId())
                 .collect(Collectors.toList());
@@ -43,11 +43,13 @@ public class DependencyResolver {
 
             // Find all incoming edges for this node
             boolean allDependenciesMet = true;
-            for (DagEdge edge : dag.getEdges()) {
-                if (edge.getTarget().equals(node)) {
-                    if (!completedNodes.contains(edge.getSource())) {
-                        allDependenciesMet = false;
-                        break;
+            if (dag.getEdges() != null) {
+                for (DagEdge edge : dag.getEdges()) {
+                    if (edge.getTarget().equals(node)) {
+                        if (!completedNodes.contains(edge.getSource())) {
+                            allDependenciesMet = false;
+                            break;
+                        }
                     }
                 }
             }
