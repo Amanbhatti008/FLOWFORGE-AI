@@ -44,7 +44,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex, HttpServletRequest request) {
         log.error("Unhandled exception occurred", ex);
-        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "FF-500", "Internal server error", request, null);
+        
+        java.io.StringWriter sw = new java.io.StringWriter();
+        java.io.PrintWriter pw = new java.io.PrintWriter(sw);
+        ex.printStackTrace(pw);
+        String stackTrace = sw.toString();
+
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "FF-500", "Internal server error: " + ex.getMessage() + " | StackTrace: " + stackTrace, request, null);
     }
 
     private ResponseEntity<ErrorResponse> buildErrorResponse(HttpStatus status, String errorCode, String message, 
