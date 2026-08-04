@@ -238,7 +238,7 @@ const WorkflowBuilderInner: React.FC = () => {
         name: n.data.label,
         app: n.data.app,
         position: n.position,
-        inputParameters: n.data.inputParameters || {}
+        inputParameters: { ...n.data.inputParameters, _retries: n.data.retries, _timeout: n.data.timeout }
       }));
 
       const execRes = await axios.post(`${API_BASE}/workflows/execute`, {
@@ -470,7 +470,7 @@ const WorkflowBuilderInner: React.FC = () => {
 
                 <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '4px', display: 'block' }}>Parameters (JSON)</label>
                 <textarea 
-                  rows={10}
+                  rows={5}
                   value={selectedNode.data.inputParameters ? JSON.stringify(selectedNode.data.inputParameters, null, 2) : '{\n  \n}'}
                   onChange={(e) => {
                     try {
@@ -480,8 +480,37 @@ const WorkflowBuilderInner: React.FC = () => {
                       // ignore parse errors while typing
                     }
                   }}
-                  style={{ width: '100%', padding: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', fontFamily: 'monospace', fontSize: '0.85rem' }}
+                  style={{ width: '100%', padding: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', fontFamily: 'monospace', fontSize: '0.85rem', marginBottom: '1rem' }}
                 />
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                  <div>
+                    <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '4px', display: 'block' }}>Max Retries</label>
+                    <input 
+                      type="number" 
+                      min="0"
+                      max="10"
+                      value={selectedNode.data.retries || 0}
+                      onChange={(e) => {
+                        setNodes(nds => nds.map(n => n.id === selectedNode.id ? { ...n, data: { ...n.data, retries: parseInt(e.target.value) } } : n));
+                      }}
+                      style={{ width: '100%', padding: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '4px', display: 'block' }}>Timeout (ms)</label>
+                    <input 
+                      type="number" 
+                      min="0"
+                      step="1000"
+                      value={selectedNode.data.timeout || 30000}
+                      onChange={(e) => {
+                        setNodes(nds => nds.map(n => n.id === selectedNode.id ? { ...n, data: { ...n.data, timeout: parseInt(e.target.value) } } : n));
+                      }}
+                      style={{ width: '100%', padding: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff' }}
+                    />
+                  </div>
+                </div>
               </>
             )}
 

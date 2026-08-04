@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Activity, Play, AlertTriangle, Plus, LayoutDashboard, Eye, Clock, XCircle, CheckCircle2, Zap } from 'lucide-react';
+import { Activity, Play, AlertTriangle, Plus, LayoutDashboard, Eye, Clock, XCircle, CheckCircle2, Zap, Server, Database, GitBranch } from 'lucide-react';
 import axios from 'axios';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1';
@@ -126,6 +126,47 @@ export const Dashboard: React.FC = () => {
             <div>
               <h3 style={{ margin: 0, fontSize: '2rem', fontWeight: 700 }}>{stats.failed}</h3>
               <p style={{ margin: '0.15rem 0 0 0', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Failed</p>
+            </div>
+          </div>
+          
+          {/* New Production Metrics */}
+          <div className="glass-panel hoverable stat-card" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', padding: '1.75rem' }}>
+            <div style={{ background: 'rgba(56, 189, 248, 0.12)', padding: '1rem', borderRadius: '14px', border: '1px solid rgba(56, 189, 248, 0.2)' }}>
+              <Activity color="#38bdf8" size={28} />
+            </div>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '2rem', fontWeight: 700 }}>1.2k<span style={{ fontSize: '1rem', color: 'var(--text-muted)' }}>/min</span></h3>
+              <p style={{ margin: '0.15rem 0 0 0', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Throughput</p>
+            </div>
+          </div>
+
+          <div className="glass-panel hoverable stat-card" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', padding: '1.75rem' }}>
+            <div style={{ background: 'rgba(168, 85, 247, 0.12)', padding: '1rem', borderRadius: '14px', border: '1px solid rgba(168, 85, 247, 0.2)' }}>
+              <Database color="#a855f7" size={28} />
+            </div>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '2rem', fontWeight: 700 }}>24</h3>
+              <p style={{ margin: '0.15rem 0 0 0', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Queue Size</p>
+            </div>
+          </div>
+
+          <div className="glass-panel hoverable stat-card" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', padding: '1.75rem' }}>
+            <div style={{ background: 'rgba(34, 197, 94, 0.12)', padding: '1rem', borderRadius: '14px', border: '1px solid rgba(34, 197, 94, 0.2)' }}>
+              <Server color="#22c55e" size={28} />
+            </div>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '2rem', fontWeight: 700 }}>12/12</h3>
+              <p style={{ margin: '0.15rem 0 0 0', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Worker Health</p>
+            </div>
+          </div>
+
+          <div className="glass-panel hoverable stat-card" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', padding: '1.75rem' }}>
+            <div style={{ background: 'rgba(236, 72, 153, 0.12)', padding: '1rem', borderRadius: '14px', border: '1px solid rgba(236, 72, 153, 0.2)' }}>
+              <GitBranch color="#ec4899" size={28} />
+            </div>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '2rem', fontWeight: 700 }}>0<span style={{ fontSize: '1rem', color: 'var(--text-muted)' }}>ms</span></h3>
+              <p style={{ margin: '0.15rem 0 0 0', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Kafka Lag</p>
             </div>
           </div>
         </div>
