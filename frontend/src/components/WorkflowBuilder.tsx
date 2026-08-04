@@ -14,7 +14,7 @@ import {
   ReactFlowProvider
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { ArrowLeft, Play, Code, Globe, Mail, Bot, Database, MessageSquare, GitBranch, Server, FileCheck, Upload, Bell, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Play, Code, Globe, Mail, Bot, Database, MessageSquare, GitBranch, Server, FileCheck, Upload, Bell, ChevronDown, X, Settings } from 'lucide-react';
 import axios from 'axios';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1';
@@ -168,6 +168,23 @@ const WorkflowBuilderInner: React.FC = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(template.nodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(edgesWithStyle);
   const [loading, setLoading] = useState(false);
+  const [selectedNode, setSelectedNode] = useState<any>(null);
+  const [selectedEdge, setSelectedEdge] = useState<any>(null);
+
+  const onNodeClick = useCallback((_: React.MouseEvent, node: any) => {
+    setSelectedNode(node);
+    setSelectedEdge(null);
+  }, []);
+
+  const onEdgeClick = useCallback((_: React.MouseEvent, edge: any) => {
+    setSelectedEdge(edge);
+    setSelectedNode(null);
+  }, []);
+  
+  const closePanel = () => {
+    setSelectedNode(null);
+    setSelectedEdge(null);
+  };
 
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
@@ -220,12 +237,13 @@ const WorkflowBuilderInner: React.FC = () => {
         type: n.data.type || 'HTTP',
         name: n.data.label,
         app: n.data.app,
-        position: n.position
+        position: n.position,
+        inputParameters: n.data.inputParameters || {}
       }));
 
       const execRes = await axios.post(`${API_BASE}/workflows/execute`, {
         nodes: backendNodes,
-        edges: edges.map(e => ({ source: e.source, target: e.target }))
+        edges: edges.map(e => ({ source: e.source, target: e.target, condition: e.data?.condition }))
       }, { headers: { Authorization: `Bearer ${token}` } });
 
       const executionId = execRes.data.data.executionId;
@@ -405,6 +423,8 @@ const WorkflowBuilderInner: React.FC = () => {
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
+            onNodeClick={onNodeClick}
+            onEdgeClick={onEdgeClick}
             nodeTypes={nodeTypes}
             colorMode="dark"
             fitView
@@ -413,6 +433,77 @@ const WorkflowBuilderInner: React.FC = () => {
             <Background variant={BackgroundVariant.Dots} gap={16} size={1} color="rgba(255,255,255,0.08)" />
           </ReactFlow>
         </div>
+
+        {/* Config Panel */}
+        {(selectedNode || selectedEdge) && (
+          <div style={{
+            width: '320px',
+            background: 'rgba(15, 23, 42, 0.95)',
+            backdropFilter: 'blur(16px)',
+            borderLeft: '1px solid rgba(255,255,255,0.08)',
+            padding: '1.25rem',
+            display: 'flex',
+            flexDirection: 'column',
+            overflowY: 'auto'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h3 style={{ margin: 0, fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Settings size={18} color="#818cf8" />
+                {selectedNode ? 'Node Configuration' : 'Edge Configuration'}
+              </h3>
+              <button className="btn-ghost" onClick={closePanel} style={{ padding: '4px' }}>
+                <X size={18} />
+              </button>
+            </div>
+
+            {selectedNode && (
+              <>
+                <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '4px', display: 'block' }}>Node Name</label>
+                <input 
+                  type="text" 
+                  value={selectedNode.data.label}
+                  onChange={(e) => {
+                    setNodes(nds => nds.map(n => n.id === selectedNode.id ? { ...n, data: { ...n.data, label: e.target.value } } : n));
+                  }}
+                  style={{ width: '100%', padding: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', marginBottom: '1rem' }}
+                />
+
+                <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '4px', display: 'block' }}>Parameters (JSON)</label>
+                <textarea 
+                  rows={10}
+                  value={selectedNode.data.inputParameters ? JSON.stringify(selectedNode.data.inputParameters, null, 2) : '{\n  \n}'}
+                  onChange={(e) => {
+                    try {
+                      const parsed = JSON.parse(e.target.value);
+                      setNodes(nds => nds.map(n => n.id === selectedNode.id ? { ...n, data: { ...n.data, inputParameters: parsed } } : n));
+                    } catch (err) {
+                      // ignore parse errors while typing
+                    }
+                  }}
+                  style={{ width: '100%', padding: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', fontFamily: 'monospace', fontSize: '0.85rem' }}
+                />
+              </>
+            )}
+
+            {selectedEdge && (
+              <>
+                <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '4px', display: 'block' }}>Branching Condition (JS)</label>
+                <textarea 
+                  rows={6}
+                  placeholder="e.g., output.status === 200"
+                  value={selectedEdge.data?.condition || ''}
+                  onChange={(e) => {
+                    setEdges(eds => eds.map(ed => ed.id === selectedEdge.id ? { ...ed, data: { ...ed.data, condition: e.target.value } } : ed));
+                  }}
+                  style={{ width: '100%', padding: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', fontFamily: 'monospace', fontSize: '0.85rem' }}
+                />
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '8px' }}>
+                  If provided, this edge will only be traversed if the JS expression evaluates to true based on the source node's "output" object.
+                </p>
+              </>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

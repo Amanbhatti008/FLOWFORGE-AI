@@ -12,22 +12,24 @@ public class TaskStateMachine {
 
     private static boolean isValidTransition(TaskStatus currentStatus, TaskStatus targetStatus) {
         if (currentStatus == null) {
-            return targetStatus == TaskStatus.PENDING || targetStatus == TaskStatus.SCHEDULED;
+            return targetStatus == TaskStatus.PENDING || targetStatus == TaskStatus.SCHEDULED || targetStatus == TaskStatus.SKIPPED;
         }
 
         switch (currentStatus) {
             case PENDING:
-                return targetStatus == TaskStatus.SCHEDULED;
+                return targetStatus == TaskStatus.SCHEDULED || targetStatus == TaskStatus.SKIPPED;
             case SCHEDULED:
-                return targetStatus == TaskStatus.QUEUED || targetStatus == TaskStatus.FAILED;
+                return targetStatus == TaskStatus.QUEUED || targetStatus == TaskStatus.FAILED || targetStatus == TaskStatus.SKIPPED;
             case QUEUED:
-                return targetStatus == TaskStatus.RUNNING;
+                return targetStatus == TaskStatus.RUNNING || targetStatus == TaskStatus.SKIPPED;
             case RUNNING:
                 return targetStatus == TaskStatus.SUCCESS || targetStatus == TaskStatus.FAILED || targetStatus == TaskStatus.SCHEDULED;
             case FAILED:
                 return targetStatus == TaskStatus.SCHEDULED; // Retry scenario
             case SUCCESS:
                 return false; // Terminal state, no outbound transitions allowed
+            case SKIPPED:
+                return false; // Terminal state
             default:
                 return false;
         }

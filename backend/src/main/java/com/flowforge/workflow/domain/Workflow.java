@@ -22,6 +22,12 @@ public class Workflow {
 
     private String description;
 
+    @Column(name = "cron_expression")
+    private String cronExpression;
+
+    @Column(name = "next_run_at")
+    private Instant nextRunAt;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 

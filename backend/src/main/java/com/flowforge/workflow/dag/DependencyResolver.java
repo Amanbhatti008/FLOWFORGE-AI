@@ -11,9 +11,6 @@ import java.util.stream.Collectors;
 @SuppressWarnings("null")
 public class DependencyResolver {
 
-    /**
-     * Finds the initial nodes (in-degree 0) for a brand-new workflow execution.
-     */
     public static List<String> getInitialNodes(DagDefinition dag) {
         Set<String> targetNodes = (dag.getEdges() != null ? dag.getEdges() : new ArrayList<DagEdge>()).stream()
                 .map(DagEdge::getTarget)
@@ -25,28 +22,21 @@ public class DependencyResolver {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Given a list of successfully completed node IDs in the current execution,
-     * calculate which nodes are now unlocked and ready to be scheduled.
-     * A node is unlocked if ALL of its incoming dependencies are in the completedNodes set.
-     */
-    public static List<String> getUnlockedNodes(DagDefinition dag, Set<String> completedNodes, Set<String> alreadyScheduledOrRunning) {
+    public static List<String> getUnlockedNodes(DagDefinition dag, Set<String> completedNodes, Set<String> skippedNodes, Set<String> alreadyScheduledOrRunning) {
         List<String> unlocked = new ArrayList<>();
-
         WorkflowGraph graph = DagParser.parse(dag);
         
         for (String node : graph.getAllNodes()) {
-            // Skip if already completed or currently running/scheduled
-            if (completedNodes.contains(node) || alreadyScheduledOrRunning.contains(node)) {
+            if (completedNodes.contains(node) || skippedNodes.contains(node) || alreadyScheduledOrRunning.contains(node)) {
                 continue;
             }
 
-            // Find all incoming edges for this node
             boolean allDependenciesMet = true;
             if (dag.getEdges() != null) {
                 for (DagEdge edge : dag.getEdges()) {
                     if (edge.getTarget().equals(node)) {
-                        if (!completedNodes.contains(edge.getSource())) {
+                        // A dependency is met if it's either COMPLETED or SKIPPED
+                        if (!completedNodes.contains(edge.getSource()) && !skippedNodes.contains(edge.getSource())) {
                             allDependenciesMet = false;
                             break;
                         }
@@ -58,7 +48,6 @@ public class DependencyResolver {
                 unlocked.add(node);
             }
         }
-
         return unlocked;
     }
 }
