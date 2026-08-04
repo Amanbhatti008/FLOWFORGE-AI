@@ -31,9 +31,9 @@ FlowForge AI is a distributed orchestration platform designed to automate data p
 
 ## 🎥 Demo Video
 
-> **Note to Recruiter:** Please watch this 2-minute demo video showing the DAG builder, live WebSocket execution, and AI auto-generation capabilities.
+> **Note to Recruiter:** Please click the video below to watch a 2-minute demo showing the DAG builder, live WebSocket execution, and AI auto-generation capabilities.
 > 
-> *(Upload your 2-minute .mp4 or .gif here)*
+> [![Demo Video](docs/assets/demo-video.png)](https://flowforge-ai-five.vercel.app)
 
 ---
 
@@ -77,24 +77,24 @@ The system uses an event-driven microservices architecture optimized for horizon
 
 ```mermaid
 flowchart TD
-    Client[React Web UI] -- REST / WebSocket --> API Gateway[Spring Boot API]
-    API Gateway -- 1. Submit Dag --> DB[(PostgreSQL)]
-    API Gateway -- 2. Produce Task --> Kafka[Apache Kafka (Event Bus)]
+    Client["React Web UI"] -->|"REST / WebSocket"| API_Gateway["Spring Boot API"]
+    API_Gateway -->|"1. Submit Dag"| DB[("PostgreSQL")]
+    API_Gateway -->|"2. Produce Task"| Kafka["Apache Kafka (Event Bus)"]
     
     subgraph Distributed Workers
-        W1[Worker Pod 1]
-        W2[Worker Pod N]
+        W1["Worker Pod 1"]
+        W2["Worker Pod N"]
     end
     
-    Kafka -- 3. Consume Task --> W1
-    Kafka -- 3. Consume Task --> W2
+    Kafka -->|"3. Consume Task"| W1
+    Kafka -->|"3. Consume Task"| W2
     
-    W1 -- 4. Distributed Lock --> Redis[(Redis Cluster)]
-    W2 -- 4. Distributed Lock --> Redis
+    W1 -->|"4. Distributed Lock"| Redis[("Redis Cluster")]
+    W2 -->|"4. Distributed Lock"| Redis
     
-    W1 -- 5. Update Status --> DB
-    W1 -- 6. Push Update --> WS[WebSocket Server]
-    WS -- 7. Realtime UI Sync --> Client
+    W1 -->|"5. Update Status"| DB
+    W1 -->|"6. Push Update"| WS["WebSocket Server"]
+    WS -->|"7. Realtime UI Sync"| Client
 ```
 
 ### The Execution Flow:
