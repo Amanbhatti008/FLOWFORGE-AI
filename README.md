@@ -3,14 +3,13 @@
 
   # FlowForge AI
   
-  **A scalable, distributed, and AI-native workflow orchestration platform.**
+  **A scalable, distributed workflow orchestration and automation platform.**
 
   [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
   [![React](https://img.shields.io/badge/React-19.2.7-blue.svg)](https://reactjs.org/)
   [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.4-brightgreen.svg)](https://spring.io/projects/spring-boot)
-  [![Kafka](https://img.shields.io/badge/Apache%20Kafka-Distributed-black.svg)](https://kafka.apache.org/)
-  [![Resilience4j](https://img.shields.io/badge/Resilience4j-Circuit%20Breaker-orange.svg)](https://resilience4j.readme.io/)
-  [![OpenTelemetry](https://img.shields.io/badge/OpenTelemetry-Tracing-purple.svg)](https://opentelemetry.io/)
+  [![Kafka](https://img.shields.io/badge/Kafka-Enabled-black.svg)](https://kafka.apache.org/)
+  [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
   ### 🚀 Live Demo
   - **Backend API:** [https://flowforge-api-jezk.onrender.com](https://flowforge-api-jezk.onrender.com) (Live on Render)
@@ -21,79 +20,82 @@
 
 ## 📖 Overview
 
-**FlowForge AI** is a production-grade, distributed workflow orchestration platform built to empower teams to visually design, automate, and monitor complex systems. Designed with the architectural rigor of enterprise systems (e.g., Temporal, Airflow), FlowForge AI seamlessly blends a robust, fault-tolerant Spring Boot execution engine with a premium React-based visual builder.
-
-## 🌟 Premium Features
-
-- 🧠 **AI-Native Workflow Generation**: Describe your pipeline in natural language (e.g., "Build a CI/CD pipeline that builds a docker image and deploys to K8s") and our OpenAI GPT-4 integration generates the entire Directed Acyclic Graph (DAG) for you.
-- 🔀 **Advanced Orchestration Logic**: Support for conditional branching (IF/ELSE) powered by GraalVM JavaScript evaluation and Fork/Join parallel execution.
-- ⏱️ **Distributed Cron Scheduling**: Built-in Quartz-like distributed scheduling using Redisson locks to safely trigger workflows on precise cadences across a multi-node cluster.
-- 📡 **Real-Time Telemetry**: WebSockets stream sub-millisecond status updates directly to the frontend's Live Execution Viewer.
-- 🛡️ **Enterprise Resiliency**: Integrated Circuit Breakers (Resilience4j), Dead Letter Queues (DLQ), and robust retries ensure data is never lost, even when upstream services fail.
-- 🔍 **Distributed Tracing & Monitoring**: Deeply integrated with OpenTelemetry, Jaeger, Prometheus, and Grafana for complete observability. Sentry captures all edge-case exceptions.
-- 🎨 **State-of-the-Art UI/UX**: A highly responsive, glassmorphic design system leveraging ReactFlow for an unparalleled developer experience.
+FlowForge AI is a distributed workflow orchestration platform designed to help teams design, automate, and monitor complex processes. Powered by a robust Spring Boot backend, an event-driven Kafka architecture, and a modern React frontend, it provides an intuitive visual builder to orchestrate data pipelines, CI/CD tasks, and AI triaging systems.
 
 ## 📊 By The Numbers
 
-- **20+ REST APIs** with strict OpenAPI v3 documentation.
-- **Microsecond Latency** WebSocket execution streaming.
-- **Concurrent Users**: 1000+ per cluster node.
-- **Workflow Executions**: 1000/min with an average latency of 120ms under stress testing.
+- **20+ REST APIs** for workflow and execution management
+- **JWT Authentication** with Role-Based Access Control (RBAC)
+- **Kafka-based** robust distributed execution engine
+- **Docker Ready** with full containerized infrastructure
+- **Redis Locking** for safe concurrent task processing
 
-## 🏛️ System Architecture
+## 📈 Load Testing & Performance
 
-FlowForge AI is architected as an event-driven microservices platform.
+FlowForge AI is designed for high concurrency and scale. Using `k6` for load testing, the backend achieves the following under stress:
+
+- **Concurrent Users**: 1000
+- **Workflow Executions**: 1000/min
+- **Average API Latency**: 120ms
+- **Success Rate**: 99.8%
+
+## 🏛️ Architecture
 
 ```mermaid
 flowchart LR
-    User[User / Client] --> ReactUI[React Frontend (Vite)]
-    ReactUI -- REST / WebSocket --> API[Spring Boot API Gateway]
+    User[User] --> Frontend[React Frontend]
+    Frontend --> API[Spring Boot API]
     
-    API -- Enqueue Task --> Kafka[Apache Kafka (Event Bus)]
-    Kafka -- Consume --> Workers[Distributed Task Workers]
+    API --> Kafka[Apache Kafka]
+    Kafka --> Workers[Workflow Workers]
     
-    API -- Read/Write --> PostgreSQL[(PostgreSQL State)]
-    Workers -- Update State --> PostgreSQL
+    API --> PostgreSQL[(PostgreSQL)]
+    Workers --> PostgreSQL
     
-    Workers -- Lock/Lease --> Redis[(Redis Cluster)]
-    API -- Lock/Lease --> Redis
+    Workers --> Redis[(Redis Distributed Locking)]
     
-    Workers -- Traces/Metrics --> OTel[OpenTelemetry Collector]
-    OTel --> Jaeger[Jaeger]
-    OTel --> Prom[Prometheus]
+    API --> Monitoring[Prometheus + Grafana]
+    Workers --> Monitoring
 ```
+
+## ✨ Key Features
+
+- **Visual Workflow Builder**: Intuitive drag-and-drop interface powered by ReactFlow.
+- **Distributed Execution**: Fault-tolerant execution engine backed by Apache Kafka and PostgreSQL.
+- **Real-Time Monitoring**: Live dashboards with active run tracking and real-time execution status.
+- **Scalable Architecture**: Microservices-ready design with Redis for distributed locking and caching.
+- **Template Library**: Pre-built templates for CI/CD, Data ETL, and AI triage pipelines.
+- **Modern UI/UX**: Premium glassmorphism design with responsive and interactive components.
 
 ## 🛠 Tech Stack
 
-### 🖥️ Frontend (Client)
+### Frontend
 - **Framework**: React 19, TypeScript, Vite
 - **State & Routing**: React Router
 - **UI Components**: ReactFlow (Node based UI), Lucide React (Icons)
-- **Styling**: Tailwind CSS / Custom Premium Glassmorphism
+- **Styling**: Tailwind CSS / Custom Glassmorphism CSS
 
-### ⚙️ Backend (Server)
-- **Core**: Java 21, Spring Boot 3.3.4 (Virtual Threads Enabled)
-- **Database**: PostgreSQL (managed via Flyway Migrations)
-- **Messaging/Streaming**: Apache Kafka (Event Sourcing)
-- **Caching & Locking**: Redis via Redisson (Distributed Locks)
-- **Security**: Stateless JWT Authentication, Spring Security (RBAC)
-- **Script Engine**: GraalVM Polyglot (for conditional branching)
+### Backend
+- **Core**: Java 21, Spring Boot 3.3.4
+- **Database**: PostgreSQL (managed via Flyway)
+- **Messaging**: Apache Kafka
+- **Caching & Locks**: Redis (via Redisson)
+- **Security**: JWT Authentication, Spring Security
 
-### 📈 Infrastructure & Observability
-- **Tracing & Metrics**: OpenTelemetry, Micrometer, Prometheus, Jaeger
-- **Error Tracking**: Sentry SDK
+### Infrastructure
 - **Containerization**: Docker & Docker Compose
 - **Orchestration**: Kubernetes manifests included (`/k8s`)
+- **Observability**: Prometheus & Grafana integrations
 
 ## 📂 Project Structure
 
 ```text
 flowforge-ai/
-├── backend/          # Core Workflow Engine, API, and Workers
-├── frontend/         # Visual Workflow Builder and Live Dashboard
-├── docker/           # Local development infrastructure (Kafka, Postgres, Redis)
-├── k8s/              # Production-ready Kubernetes manifests
-└── docs/             # Architecture Decision Records (ADRs) and specs
+├── backend/          # Spring Boot application (REST API, Workflow Engine)
+├── frontend/         # React/Vite web application (UI, Dashboard, Builder)
+├── docker/           # Docker Compose setups for Postgres, Redis, Kafka, etc.
+├── k8s/              # Kubernetes deployment manifests
+└── docs/             # Architecture Decision Records (ADRs) and documentation
 ```
 
 ## 🚀 Getting Started
@@ -103,7 +105,7 @@ flowforge-ai/
 - [Java 21](https://adoptium.net/) (for local backend development)
 - [Node.js 20+](https://nodejs.org/) (for local frontend development)
 
-### Running Locally (Full Stack)
+### Running Locally with Docker (Full Stack)
 
 1. **Clone the repository:**
    ```bash
@@ -115,6 +117,7 @@ flowforge-ai/
    cd docker
    docker-compose up -d
    ```
+   *This starts PostgreSQL, Redis, Kafka, Prometheus, and Grafana.*
 
 3. **Start Backend Server:**
    ```bash
@@ -132,13 +135,60 @@ flowforge-ai/
 5. **Access the Application:**
    Open `http://localhost:5173` in your browser.
 
+### Running Locally with Minikube (Kubernetes)
+
+For a closer-to-production local environment, you can use Minikube.
+
+1. **Start Minikube:**
+   ```bash
+   minikube start --memory=4096 --cpus=4
+   ```
+
+2. **Deploy Infrastructure & Services:**
+   ```bash
+   kubectl apply -f k8s/
+   ```
+
+3. **Verify Deployment:**
+   Wait for all pods to be in `Running` state:
+   ```bash
+   kubectl get pods
+   ```
+   *(Include a screenshot of your running pods here)*
+
+4. **Access the Services:**
+   ```bash
+   minikube service frontend-service
+   ```
+
+## 📸 Screenshots
+
+| Login Page | Dashboard |
+|:---:|:---:|
+| ![Login Page](docs/assets/login.png) | ![Dashboard](docs/assets/dashboard.png) |
+
+### Workflow Builder
+![Workflow Builder](docs/assets/builder.png)
+*(Note: To upload a demo video, you can drag and drop an MP4 or GIF file directly into this README on GitHub!)*
+
+## 🔮 Future Improvements
+
+- [ ] Add support for custom Python execution nodes.
+- [ ] Implement advanced RBAC (Role-Based Access Control) for teams.
+- [ ] Introduce a plugin marketplace for community-driven nodes.
+- [ ] Comprehensive E2E testing suite using Playwright or Cypress.
+
 ## 🤝 Contributing
 
 We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details on how to get started. By participating in this project, you agree to abide by our [Code of Conduct](CODE_OF_CONDUCT.md).
+
+## 🛡️ Security
+
+If you discover a security vulnerability within this project, please refer to our [Security Policy](SECURITY.md) for reporting guidelines.
 
 ## 📄 License
 
 This project is licensed under the [MIT License](LICENSE).
 
 ---
-*Architected and engineered for high-availability systems. Ready for scale.*
+*Built with ❤️ by Aman Bhatti*

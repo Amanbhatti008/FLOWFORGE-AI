@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import java.util.UUID;
 import java.time.OffsetDateTime;
+import java.security.MessageDigest;
+import java.nio.charset.StandardCharsets;
 
 @Aspect
 @Component
@@ -46,7 +48,18 @@ public class AuditLogAspect {
                     String userAgent = request.getHeader("User-Agent");
                     String traceId = (String) request.getAttribute("traceId");
 
-                    String currentHash = org.apache.commons.codec.digest.DigestUtils.sha256Hex(traceId + endpoint + status + duration);
+                    String data = traceId + endpoint + status + duration;
+                    MessageDigest digest = MessageDigest.getInstance("SHA-256");
+                    byte[] hash = digest.digest(data.getBytes(StandardCharsets.UTF_8));
+                    StringBuilder hexString = new StringBuilder(2 * hash.length);
+                    for (byte b : hash) {
+                        String hex = Integer.toHexString(0xff & b);
+                        if(hex.length() == 1) {
+                            hexString.append('0');
+                        }
+                        hexString.append(hex);
+                    }
+                    String currentHash = hexString.toString();
 
                     jdbcTemplate.update("INSERT INTO audit_logs (id, request_id, endpoint, ip, user_agent, http_method, response_status, duration_ms, timestamp, current_hash) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                             UUID.randomUUID(), traceId, endpoint, ip, userAgent, method, status, duration, OffsetDateTime.now(), currentHash);
