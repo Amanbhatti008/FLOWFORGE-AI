@@ -4,15 +4,13 @@
 
 :root {
   /* Deep Space Theme */
-  --bg-base: #060913;
-  --bg-surface: rgba(16, 23, 42, 0.6);
-  --bg-surface-hover: rgba(30, 41, 59, 0.8);
+  --bg-base: #0a0a0a;
+  --bg-surface: #151515;
+  --bg-surface-hover: #1a1a1a;
   
   /* Vibrant Accents */
   --accent-primary: #3b82f6;
   --accent-glow: rgba(59, 130, 246, 0.5);
-  --accent-purple: #8b5cf6;
-  --accent-cyan: #06b6d4;
   
   /* Status Colors */
   --status-success: #10b981;
@@ -43,10 +41,6 @@ body {
   background-color: var(--bg-base);
   color: var(--text-primary);
   min-height: 100vh;
-  background-image: 
-    radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.08), transparent 25%),
-    radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.08), transparent 25%);
-  background-attachment: fixed;
   display: flex;
   flex-direction: column;
 }
@@ -357,10 +351,9 @@ body {
   --glass-border: rgba(0, 243, 255, 0.2);
 }
 
-.bg-moving-gradient {
-  background: linear-gradient(135deg, #050b14, #0a1128, #110e25);
-  background-size: 400% 400%;
-  animation: gradient 15s ease infinite;
+.bg-workflow-theme {
+  background: #0a0a0a;
+  color: #fff;
 }
 
 .glass-panel {

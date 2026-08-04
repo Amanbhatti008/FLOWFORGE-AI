@@ -78,56 +78,60 @@ const TEMPLATES: Record<string, { name: string; description: string; nodes: any[
   }
 };
 
-// Custom Node
+// Custom Node matching the WORKFLOW.IO video mockup
 const CustomSciFiNode = ({ data }: any) => {
   const iconMap: Record<string, any> = {
-    'Mail': <Mail size={20} color="#60a5fa" />,
-    'Bot': <Bot size={20} color="#c084fc" />,
-    'Database': <Database size={20} color="#f472b6" />,
-    'MessageSquare': <MessageSquare size={20} color="#fbbf24" />,
-    'GitBranch': <GitBranch size={20} color="#f97316" />,
-    'Server': <Server size={20} color="#38bdf8" />,
-    'FileCheck': <FileCheck size={20} color="#a3e635" />,
-    'Upload': <Upload size={20} color="#2dd4bf" />,
-    'Bell': <Bell size={20} color="#fb923c" />,
+    'Mail': <Mail size={16} color="#3b82f6" />,
+    'Bot': <Bot size={16} color="#8b5cf6" />,
+    'Database': <Database size={16} color="#10b981" />,
+    'MessageSquare': <MessageSquare size={16} color="#f59e0b" />,
+    'GitBranch': <GitBranch size={16} color="#ef4444" />,
+    'Server': <Server size={16} color="#06b6d4" />,
+    'FileCheck': <FileCheck size={16} color="#84cc16" />,
+    'Upload': <Upload size={16} color="#14b8a6" />,
+    'Bell': <Bell size={16} color="#f97316" />,
+    'Play': <Play size={16} color="#ef4444" />,
   };
 
   return (
     <div style={{
-      background: 'rgba(16, 23, 42, 0.85)',
-      backdropFilter: 'blur(12px)',
-      border: `1px solid rgba(99, 102, 241, 0.3)`,
-      borderRadius: '12px',
-      padding: '1rem',
-      minWidth: '220px',
-      boxShadow: `0 8px 32px rgba(99, 102, 241, 0.1)`,
+      background: '#222222',
+      border: `1px solid #333333`,
+      borderRadius: '8px',
+      padding: '12px 16px',
+      minWidth: '240px',
       display: 'flex',
       alignItems: 'center',
-      gap: '1rem',
-      color: '#f8fafc'
+      justifyContent: 'space-between',
+      color: '#ffffff',
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5)',
     }}>
-      <Handle type="target" position={Position.Top} style={{ background: '#94a3b8', border: 'none', width: '8px', height: '8px' }} />
-      <div style={{
-        background: 'rgba(99, 102, 241, 0.15)',
-        padding: '0.6rem',
-        borderRadius: '8px'
-      }}>
-        {iconMap[data.app] || <Globe size={20} color="#60a5fa" />}
-      </div>
-      <div>
-        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
-          {data.type} TASK
+      <Handle type="target" position={Position.Left} style={{ background: '#3b82f6', border: 'none', width: '10px', height: '10px', left: '-5px' }} />
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{
+          background: '#1a1a1a',
+          padding: '8px',
+          borderRadius: '6px',
+          border: '1px solid #333'
+        }}>
+          {iconMap[data.app] || <Globe size={16} color="#3b82f6" />}
         </div>
-        <div style={{ fontWeight: 600, marginTop: '2px', fontSize: '0.9rem' }}>{data.label}</div>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div style={{ fontWeight: 500, fontSize: '0.9rem' }}>{data.label}</div>
+          <div style={{ fontSize: '0.75rem', color: '#888' }}>
+            ({data.type === 'SCRIPT' ? 'Python Script' : data.type === 'HTTP' ? 'Webhook' : data.type})
+          </div>
+        </div>
       </div>
-      <Handle type="source" position={Position.Bottom} style={{ background: '#94a3b8', border: 'none', width: '8px', height: '8px' }} />
+      <div style={{ color: '#666', cursor: 'pointer' }}>⋮</div>
+      <Handle type="source" position={Position.Right} style={{ background: '#3b82f6', border: 'none', width: '10px', height: '10px', right: '-5px' }} />
     </div>
   );
 };
 
 const nodeTypes = { custom: CustomSciFiNode };
 
-const SidebarItem = ({ icon: Icon, label, color, type, app }: any) => (
+const SidebarItem = ({ icon: Icon, label, type, app }: any) => (
   <div
     draggable
     onDragStart={(e) => {
@@ -135,18 +139,16 @@ const SidebarItem = ({ icon: Icon, label, color, type, app }: any) => (
       e.dataTransfer.effectAllowed = 'move';
     }}
     style={{
-      display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px',
-      background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
-      borderRadius: '8px', marginBottom: '6px', cursor: 'grab',
-      transition: 'all 0.2s ease'
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px',
+      background: '#1a1a1a', border: '1px solid #333',
+      borderRadius: '8px', cursor: 'grab', padding: '16px 8px',
+      transition: 'all 0.2s ease', color: '#999'
     }}
-    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)'; }}
-    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.03)'; }}
+    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.border = '1px solid #555'; (e.currentTarget as HTMLElement).style.color = '#fff'; }}
+    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.border = '1px solid #333'; (e.currentTarget as HTMLElement).style.color = '#999'; }}
   >
-    <div style={{ background: `rgba(255,255,255,0.05)`, padding: '6px', borderRadius: '6px' }}>
-      <Icon size={16} color={color} />
-    </div>
-    <span style={{ fontSize: '0.85rem', color: '#cbd5e1', fontWeight: 500 }}>{label}</span>
+    <Icon size={20} />
+    <span style={{ fontSize: '0.75rem', fontWeight: 500 }}>{label}</span>
   </div>
 );
 
@@ -162,7 +164,7 @@ const WorkflowBuilderInner: React.FC = () => {
   const edgesWithStyle = template.edges.map(e => ({
     ...e,
     animated: true,
-    style: { stroke: 'rgba(255,255,255,0.3)', strokeWidth: 2 }
+    style: { stroke: '#3b82f6', strokeWidth: 2, filter: 'drop-shadow(0 0 5px rgba(59, 130, 246, 0.8))' }
   }));
   
   const [nodes, setNodes, onNodesChange] = useNodesState(template.nodes);
@@ -214,12 +216,12 @@ const WorkflowBuilderInner: React.FC = () => {
     setEdges(t.edges.map(e => ({
       ...e,
       animated: true,
-      style: { stroke: 'rgba(255,255,255,0.3)', strokeWidth: 2 }
+      style: { stroke: '#3b82f6', strokeWidth: 2, filter: 'drop-shadow(0 0 5px rgba(59, 130, 246, 0.8))' }
     })));
     setShowDropdown(false);
   };
 
-  const onConnect = useCallback((params: any) => setEdges((eds) => addEdge({...params, animated: true, style: { stroke: 'rgba(255,255,255,0.3)', strokeWidth: 2 }}, eds)), [setEdges]);
+  const onConnect = useCallback((params: any) => setEdges((eds) => addEdge({...params, animated: true, style: { stroke: '#3b82f6', strokeWidth: 2, filter: 'drop-shadow(0 0 5px rgba(59, 130, 246, 0.8))' }}, eds)), [setEdges]);
 
   const handleSaveAndRun = async () => {
     setLoading(true);
@@ -288,7 +290,7 @@ const WorkflowBuilderInner: React.FC = () => {
           ...e,
           id: `e-${e.source}-${e.target}`,
           animated: true,
-          style: { stroke: 'rgba(255,255,255,0.3)', strokeWidth: 2 }
+          style: { stroke: '#3b82f6', strokeWidth: 2, filter: 'drop-shadow(0 0 5px rgba(59, 130, 246, 0.8))' }
         }));
         
         setNodes(formattedNodes);
@@ -304,22 +306,17 @@ const WorkflowBuilderInner: React.FC = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
       <header style={{ 
-        padding: '1rem 2rem', 
+        padding: '12px 24px', 
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center',
-        background: 'rgba(15, 23, 42, 0.6)',
-        backdropFilter: 'blur(16px)',
-        borderBottom: '1px solid rgba(255,255,255,0.1)',
+        background: '#151515',
+        borderBottom: '1px solid #2a2a2a',
         zIndex: 10
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <button className="btn-ghost" onClick={() => navigate('/dashboard')} style={{ padding: '0.5rem' }}>
-            <ArrowLeft size={20} />
-          </button>
           <div>
-            <h2 style={{ margin: 0, fontFamily: 'Outfit, sans-serif', fontSize: '1.25rem' }}>AI Orchestrator</h2>
-            <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-muted)' }}>Visual Pipeline Designer</p>
+            <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 500, color: '#e2e8f0' }}>Workspace</h2>
           </div>
         </div>
 
@@ -379,44 +376,49 @@ const WorkflowBuilderInner: React.FC = () => {
             )}
           </div>
 
-          <button className="btn-success" onClick={handleSaveAndRun} disabled={loading} style={{ 
-            boxShadow: '0 0 15px rgba(16, 185, 129, 0.4)', padding: '10px 20px'
+          <button onClick={handleSaveAndRun} disabled={loading} style={{ 
+            background: '#3b82f6', color: '#fff', border: 'none', borderRadius: '6px', padding: '8px 16px', fontSize: '0.85rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer'
           }}>
-            <Play size={16} /> {loading ? 'Deploying...' : 'Deploy & Run Pipeline'}
+            <Play size={14} /> {loading ? 'Running...' : 'Run Pipeline'}
           </button>
         </div>
       </header>
       
       <div style={{ flex: 1, display: 'flex' }}>
-        {/* Sidebar */}
+        {/* Left Palette (Steps) */}
         <div style={{
           width: '260px',
-          background: 'rgba(15, 23, 42, 0.4)',
-          backdropFilter: 'blur(16px)',
-          borderRight: '1px solid rgba(255,255,255,0.08)',
-          padding: '1.25rem',
+          background: '#111111',
+          borderRight: '1px solid #2a2a2a',
           display: 'flex',
           flexDirection: 'column',
           overflowY: 'auto'
         }}>
-          <h3 style={{ color: '#94a3b8', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '1rem' }}>Triggers</h3>
-          <SidebarItem icon={Mail} label="Email Webhook" color="#60a5fa" type="HTTP" app="Mail" />
-          <SidebarItem icon={GitBranch} label="Git Push" color="#f97316" type="HTTP" app="GitBranch" />
+          <div style={{ padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #2a2a2a' }}>
+            <h3 style={{ margin: 0, color: '#fff', fontSize: '14px', fontWeight: 500 }}>Steps</h3>
+            <span style={{ color: '#888' }}>...</span>
+          </div>
           
-          <h3 style={{ color: '#94a3b8', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1.5px', margin: '1.25rem 0 1rem' }}>AI / Compute</h3>
-          <SidebarItem icon={Bot} label="OpenAI GPT-4" color="#c084fc" type="SCRIPT" app="Bot" />
-          <SidebarItem icon={Code} label="Script Runner" color="#a3e635" type="SCRIPT" app="Code" />
-          <SidebarItem icon={Server} label="Build Server" color="#38bdf8" type="HTTP" app="Server" />
-          
-          <h3 style={{ color: '#94a3b8', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1.5px', margin: '1.25rem 0 1rem' }}>Integrations</h3>
-          <SidebarItem icon={MessageSquare} label="Slack" color="#fbbf24" type="HTTP" app="MessageSquare" />
-          <SidebarItem icon={Database} label="Jira / DB" color="#f472b6" type="HTTP" app="Database" />
-          <SidebarItem icon={Upload} label="Deploy" color="#2dd4bf" type="HTTP" app="Upload" />
-          <SidebarItem icon={Bell} label="Notification" color="#fb923c" type="HTTP" app="Bell" />
+          <div style={{ padding: '16px' }}>
+            <h4 style={{ color: '#888', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '12px', fontWeight: 500 }}>Triggers</h4>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '10px' }}>
+              <SidebarItem icon={Play} label="Start" type="HTTP" app="Play" />
+            </div>
+            
+            <h4 style={{ color: '#888', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '24px 0 12px', fontWeight: 500 }}>Actions</h4>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+              <SidebarItem icon={Database} label="Database" type="HTTP" app="Database" />
+              <SidebarItem icon={Globe} label="API" type="HTTP" app="Globe" />
+              <SidebarItem icon={Code} label="Script" type="SCRIPT" app="Code" />
+              <SidebarItem icon={GitBranch} label="Branch" type="SCRIPT" app="GitBranch" />
+              <SidebarItem icon={Bot} label="AI Task" type="SCRIPT" app="Bot" />
+              <SidebarItem icon={MessageSquare} label="Slack" type="HTTP" app="MessageSquare" />
+            </div>
+          </div>
         </div>
         
         {/* Canvas */}
-        <div style={{ flex: 1 }} ref={reactFlowWrapper} onDragOver={onDragOver} onDrop={onDrop}>
+        <div style={{ flex: 1, background: '#181818' }} ref={reactFlowWrapper} onDragOver={onDragOver} onDrop={onDrop}>
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -429,8 +431,8 @@ const WorkflowBuilderInner: React.FC = () => {
             colorMode="dark"
             fitView
           >
-            <Controls style={{ background: 'rgba(15,23,42,0.8)', border: '1px solid rgba(255,255,255,0.1)', fill: '#fff' }} />
-            <Background variant={BackgroundVariant.Dots} gap={16} size={1} color="rgba(255,255,255,0.08)" />
+            <Controls style={{ background: '#222', border: '1px solid #333', fill: '#fff' }} />
+            <Background variant={BackgroundVariant.Dots} gap={20} size={2} color="#333" />
           </ReactFlow>
         </div>
 

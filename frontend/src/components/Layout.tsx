@@ -11,76 +11,84 @@ export const Layout: React.FC = () => {
   };
 
   const navItems = [
-    { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-    { to: '/projects', icon: FolderKanban, label: 'Projects' },
-    { to: '/integrations', icon: Network, label: 'Integrations' },
-    { to: '/analyze', icon: BarChart3, label: 'Analyze' },
-    { to: '/builder', icon: Bot, label: 'Automation Builder' },
+    { to: '/projects', label: 'Projects' },
+    { to: '/integrations', label: 'Integrations' },
+    { to: '/analyze', label: 'Analyze ⌄' },
+    { to: '/builder', label: 'Automation Builder' },
   ];
 
   return (
-    <div className="bg-moving-gradient" style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden' }}>
-      {/* Sidebar */}
+    <div className="bg-workflow-theme" style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', overflow: 'hidden' }}>
+      {/* Top Navbar */}
       <div style={{
-        width: '260px',
-        background: 'rgba(10, 14, 28, 0.85)',
-        backdropFilter: 'blur(20px)',
-        borderRight: '1px solid rgba(0, 243, 255, 0.15)',
-        boxShadow: '2px 0 20px rgba(176, 38, 255, 0.05)',
+        height: '60px',
+        background: '#151515',
+        borderBottom: '1px solid #2a2a2a',
         display: 'flex',
-        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 24px',
         zIndex: 50
       }}>
-        <div style={{ padding: '2rem 1.5rem', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div className="neon-border" style={{ padding: '8px', borderRadius: '10px', background: 'rgba(0, 243, 255, 0.1)' }}>
-            <LayoutTemplate size={24} color="#00f3ff" />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
+          {/* Logo */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }} onClick={() => navigate('/dashboard')}>
+            <div style={{ display: 'flex', gap: '2px', flexWrap: 'wrap', width: '20px' }}>
+              <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#00f3ff' }}></div>
+              <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#fff' }}></div>
+              <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#fff' }}></div>
+              <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#00f3ff' }}></div>
+            </div>
+            <h1 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#e2e8f0', letterSpacing: '1px' }}>
+              WORKFLOW.IO
+            </h1>
           </div>
-          <h1 className="neon-text" style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700 }}>
-            FlowForge AI
-          </h1>
+
+          {/* Nav Links */}
+          <nav style={{ display: 'flex', gap: '24px' }}>
+            {navItems.map((item) => {
+              const isActive = window.location.pathname.startsWith(item.to);
+              return (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  style={{
+                    textDecoration: 'none',
+                    color: isActive ? '#3b82f6' : '#94a3b8',
+                    fontSize: '13px',
+                    fontWeight: 500,
+                    borderBottom: isActive ? '2px solid #3b82f6' : '2px solid transparent',
+                    padding: '20px 0',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  {item.label}
+                </NavLink>
+              );
+            })}
+          </nav>
         </div>
 
-        <nav style={{ flex: 1, padding: '0 1rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--text-muted)', marginBottom: '8px', paddingLeft: '8px' }}>
-            Main Menu
-          </div>
-          {navItems.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              style={({ isActive }) => ({
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                padding: '12px 16px',
-                borderRadius: '12px',
-                textDecoration: 'none',
-                color: isActive ? '#00f3ff' : '#cbd5e1',
-                background: isActive ? 'rgba(0, 243, 255, 0.1)' : 'transparent',
-                borderLeft: isActive ? '3px solid #00f3ff' : '3px solid transparent',
-                boxShadow: isActive ? 'inset 10px 0 20px rgba(0, 243, 255, 0.05)' : 'none',
-                transition: 'all 0.2s ease',
-                fontWeight: isActive ? 600 : 500
-              })}
-            >
-              <item.icon size={20} color={window.location.pathname.startsWith(item.to) ? '#00f3ff' : '#94a3b8'} />
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
-
-        <div style={{ padding: '2rem 1rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-          <NavLink to="/settings" style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', textDecoration: 'none', color: '#cbd5e1', transition: 'all 0.2s ease' }}>
-            <Settings size={20} color="#94a3b8" /> Settings
-          </NavLink>
-          <button onClick={handleLogout} style={{ width: '100%', background: 'transparent', border: 'none', display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', color: '#f87171', cursor: 'pointer', transition: 'all 0.2s ease', marginTop: '8px' }}>
-            <LogOut size={20} color="#f87171" /> Logout
+        {/* Right Actions */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <button style={{
+            background: '#fff',
+            color: '#000',
+            border: 'none',
+            borderRadius: '6px',
+            padding: '6px 16px',
+            fontSize: '13px',
+            fontWeight: 600,
+            cursor: 'pointer'
+          }}>Deploy</button>
+          <button onClick={handleLogout} style={{ background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '6px' }}>
+            <LogOut size={16} />
           </button>
         </div>
       </div>
 
       {/* Main Content Area */}
-      <div style={{ flex: 1, overflowY: 'auto', position: 'relative' }}>
+      <div style={{ flex: 1, overflow: 'hidden', position: 'relative', background: '#0a0a0a' }}>
         <Outlet />
       </div>
     </div>
