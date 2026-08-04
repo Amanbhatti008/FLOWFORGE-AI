@@ -339,10 +339,46 @@ button:disabled {
   100% { background-position: 0% 50%; }
 }
 
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #0b0f19;
+  color: #e2e8f0;
+}
+
+/* Neon Cyberpunk Theme */
+:root {
+  --neon-cyan: #00f3ff;
+  --neon-purple: #b026ff;
+  --glass-bg: rgba(16, 20, 36, 0.7);
+  --glass-border: rgba(0, 243, 255, 0.2);
+}
+
 .bg-moving-gradient {
-  background: linear-gradient(-45deg, #0f172a, #1e1b4b, #064e3b, #312e81);
+  background: linear-gradient(135deg, #050b14, #0a1128, #110e25);
   background-size: 400% 400%;
-  animation: ethereal-movement 15s ease infinite;
+  animation: gradient 15s ease infinite;
+}
+
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(0, 243, 255, 0.05);
+}
+
+.neon-text {
+  color: #fff;
+  text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-purple);
+}
+
+.neon-border {
+  border: 1px solid var(--neon-cyan);
+  box-shadow: 0 0 15px rgba(0, 243, 255, 0.3), inset 0 0 15px rgba(176, 38, 255, 0.1);
 }
 
 /* Viral Edge Animations (Data Packets) */

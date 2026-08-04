@@ -64,7 +64,7 @@ export const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="bg-moving-gradient" style={{ minHeight: '100vh', padding: '2rem' }}>
+    <div style={{ height: '100%', padding: '2rem' }}>
       <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
         {/* Header */}
         <header className="animate-slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>

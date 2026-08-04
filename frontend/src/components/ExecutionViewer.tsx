@@ -277,7 +277,7 @@ export const ExecutionViewer: React.FC = () => {
   }
 
   return (
-    <div className="bg-moving-gradient" style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Celebration Overlay */}
       {showCelebration && (
         <div style={{

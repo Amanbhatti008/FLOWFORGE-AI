@@ -302,7 +302,7 @@ const WorkflowBuilderInner: React.FC = () => {
   };
 
   return (
-    <div className="bg-moving-gradient" style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
       <header style={{ 
         padding: '1rem 2rem', 
         display: 'flex', 

@@ -115,8 +115,7 @@ FlowForge AI is built to handle heavy orchestration loads.
 - **Success Rate:** 99.8%
 
 **Proof of Performance (K6 & Grafana):**
-> *(Upload your k6-report.png or grafana-dashboard.png here showing the load test results)*
-![K6 Report](docs/assets/k6-report.png)
+> [View Real K6 Load Test Report](docs/assets/k6-report.html)
 
 ---
 
