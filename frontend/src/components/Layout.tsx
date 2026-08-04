@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, FolderKanban, Network, BarChart3, Bot, LayoutTemplate, LogOut, Settings } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 
 export const Layout: React.FC = () => {
   const navigate = useNavigate();

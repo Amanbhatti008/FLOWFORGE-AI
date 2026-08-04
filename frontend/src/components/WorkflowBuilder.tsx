@@ -14,7 +14,7 @@ import {
   ReactFlowProvider
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { ArrowLeft, Play, Code, Globe, Mail, Bot, Database, MessageSquare, GitBranch, Server, FileCheck, Upload, Bell, ChevronDown, X, Settings } from 'lucide-react';
+import { Play, Bot, Database, MessageSquare, GitBranch, Server, FileCheck, Upload, Mail, Bell, Globe, ChevronDown, Code, Settings, X } from 'lucide-react';
 import axios from 'axios';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1';

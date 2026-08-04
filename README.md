@@ -33,7 +33,7 @@ FlowForge AI is a distributed orchestration platform designed to automate data p
 
 > **Note to Recruiter:** Please click the video below to watch a 2-minute demo showing the DAG builder, live WebSocket execution, and AI auto-generation capabilities.
 > 
-> [![Demo Video](docs/assets/demo-video.png)](https://flowforge-ai-five.vercel.app)
+> [![Demo Video](docs/assets/demo-video.webp)](https://flowforge-ai-five.vercel.app)
 
 ---
 
@@ -45,9 +45,6 @@ We believe in premium, glassmorphic design that provides unparalleled Developer 
 |:---:|:---:|
 | *![Login](docs/assets/login.png)* | *![Execution](docs/assets/execution.png)* |
 
-| **Prometheus / Grafana** | **Swagger API Docs** |
-|:---:|:---:|
-| *![Grafana](docs/assets/grafana.png)* | *![Swagger](docs/assets/swagger.png)* |
 
 ### 🛠️ Professional Workflow Builder
 Our builder is not just a basic MVP. It features:
