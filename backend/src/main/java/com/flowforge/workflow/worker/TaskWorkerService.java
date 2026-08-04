@@ -28,6 +28,7 @@ public class TaskWorkerService {
     private final com.flowforge.workflow.websocket.WebSocketNotificationService webSocketNotificationService;
     private final com.flowforge.workflow.ai.AiService aiService;
     private final com.flowforge.monitoring.MetricsService metricsService;
+    private final org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
     private static final int MAX_RETRIES = 3;
 
     @EventListener
@@ -140,6 +141,20 @@ public class TaskWorkerService {
             metricsService.incrementFailedJobs();
             webSocketNotificationService.notifyTaskStatusChange(
                     task.getWorkflowExecution().getId(), task.getTaskRefName(), "FAILED");
+            
+            // Write to Dead Letter Queue (DLQ)
+            try {
+                jdbcTemplate.update("INSERT INTO dlq_messages (id, message_payload, error_reason, failed_at, retry_count, status) VALUES (?, ?::jsonb, ?, ?, ?, ?)",
+                        UUID.randomUUID(),
+                        "{\"taskId\": \"" + task.getId() + "\"}",
+                        errorMsg,
+                        java.time.OffsetDateTime.now(),
+                        currentRetries,
+                        "FAILED");
+                log.info("Task {} sent to Dead Letter Queue", task.getId());
+            } catch (Exception e) {
+                log.error("Failed to write to DLQ for task: " + task.getId(), e);
+            }
             
             // Note: In a real system, dagProgressionService might fail the entire workflow here
         }

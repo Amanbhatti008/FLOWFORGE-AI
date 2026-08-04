@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -59,6 +60,7 @@ public class AiService {
     /**
      * Generate a workflow DAG from a natural language prompt.
      */
+    @CircuitBreaker(name = "openai", fallbackMethod = "generateDemoWorkflow")
     public JsonNode generateWorkflow(String userPrompt) {
         if (aiProperties.getApiKey() == null || aiProperties.getApiKey().isBlank()) {
             log.warn("OpenAI API key not configured, returning demo workflow");
@@ -101,6 +103,7 @@ public class AiService {
     /**
      * Analyze a task failure and return AI diagnosis.
      */
+    @CircuitBreaker(name = "openai", fallbackMethod = "fallbackAnalyzeFailure")
     public String analyzeFailure(String taskName, String taskType, String errorMessage, int retryCount) {
         if (aiProperties.getApiKey() == null || aiProperties.getApiKey().isBlank()) {
             log.warn("OpenAI API key not configured, returning generic diagnosis");
@@ -149,6 +152,16 @@ public class AiService {
      * Generates a smart demo workflow when no API key is configured.
      * Parses keywords from the user prompt to build a contextual workflow.
      */
+    public String fallbackAnalyzeFailure(String taskName, String taskType, String errorMessage, int retryCount, Throwable t) {
+        log.error("Circuit Breaker activated for AI RCA: {}", t.getMessage());
+        return "AI Fix: Circuit breaker active. Check " + taskType + " task logs for details.";
+    }
+
+    public JsonNode generateDemoWorkflow(String userPrompt, Throwable t) {
+        log.error("Circuit breaker activated for AI Workflow Gen: {}", t.getMessage());
+        return generateDemoWorkflow(userPrompt);
+    }
+    
     private JsonNode generateDemoWorkflow(String userPrompt) {
         String prompt = userPrompt.toLowerCase();
         try {
